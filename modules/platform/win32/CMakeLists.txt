@@ -1,5 +1,5 @@
 
-add_library(platform_win32 STATIC window.cpp)
+add_library(platform_win32 STATIC window.cpp events.cpp context.cpp)
 
 target_link_libraries(platform_win32 PRIVATE user32)
 
