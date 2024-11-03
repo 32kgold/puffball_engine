@@ -3,6 +3,8 @@
 #include "base/window.h"
 #include "events.h"
 
+#include "../graphics/glad/glad.h"
+
 // this file is the implementation for windows platform using base window.h functions
 
 namespace engine::win32 {

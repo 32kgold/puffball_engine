@@ -2,6 +2,7 @@
 # define platform_base library
 add_library(platform_base STATIC
         headers.h
+        definitions.h
         window.h
         factory.h
         context.h

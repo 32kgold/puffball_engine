@@ -12,6 +12,11 @@ namespace engine::win32 {
         };
 
         AdjustWindowRectEx(&frame, 0, FALSE, WS_OVERLAPPED);
+
+        // load openGL functions
+        if (gladLoadGL() == FALSE) {
+            return;
+        }
     }
 
     void Window::destroy() {

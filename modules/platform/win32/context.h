@@ -1,9 +1,10 @@
 #pragma once
 
 #include "base/context.h"
-#include "base/window.h"
+#include "base/headers.h"
+#include "base/definitions.h"
 
-// implementation of context functions and initializing device contexts
+// implementation of context functions and initializing device context and rendering context
 
 namespace engine::win32 {
 
