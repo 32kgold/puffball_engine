@@ -16,6 +16,8 @@ namespace engine::win32 {
     private:
 
         bool register_window_class(const char* window_title);
+        void unregister_window_class();
+
         bool create_window(const window::config& config);
 
         ATOM atom = 0;

@@ -10,7 +10,7 @@ namespace engine::win32 {
     class Context final : public platform::base::Context {
     public:
         void create(const std::any hwnd) override;
-
+        void destroy(const std::any hwnd) override;
     private:
         HDC hdc   = 0;
         HGLRC hrc = 0;

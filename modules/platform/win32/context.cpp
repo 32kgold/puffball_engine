@@ -4,18 +4,18 @@ namespace engine::win32 {
 
     void Context::create(const std::any hwnd) {
 
-        // get the handle of window drawing device context
+        // get the handle of window device context
         hdc = GetDC(std::any_cast<HWND>(hwnd));
 
         PIXELFORMATDESCRIPTOR pfd {
             .nSize = sizeof(PIXELFORMATDESCRIPTOR),
             .dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER,
             .dwLayerMask = PFD_MAIN_PLANE,
-            .iPixelType = PFD_TYPE_COLORINDEX,
-            .cColorBits = 8,
-            .cDepthBits = 16,
-            .cAccumBits = 0,
-            .cStencilBits = 0
+            .iPixelType = PFD_TYPE_RGBA,
+            .cColorBits = 24,
+            .cDepthBits = 24,
+            .cAccumBits = 0, // 32
+            .cStencilBits = 8
         };
 
         int pixel_format = ChoosePixelFormat(hdc, &pfd); ;
@@ -30,10 +30,16 @@ namespace engine::win32 {
             return;
         }
 
-        // get the handle of the OpenGL rendering context
+        // get the handle of the rendering context
         hrc = wglCreateContext(hdc);
         wglMakeCurrent(hdc, hrc);
 
+    }
+
+    void Context::destroy(const std::any hwnd) {
+        wglMakeCurrent(nullptr, nullptr);
+        ReleaseDC(std::any_cast<HWND>(hwnd), hdc);
+        wglDeleteContext(hrc);
     }
 
 }

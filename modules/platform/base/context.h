@@ -11,6 +11,7 @@ namespace engine::platform::base {
         virtual ~Context() = default;
 
         virtual void create(const std::any hwnd);
+        virtual void destroy(const std::any hwnd);
     private:
 
     };

@@ -5,14 +5,23 @@ namespace engine::win32 {
     void Window::create(const window::config& config) {
         if (!register_window_class(config.window_title)) { return; }
         if (!create_window(config)) { return; }
+
+        RECT frame {
+            .right = config.width,
+            .bottom = config.height,
+        };
+
+        AdjustWindowRectEx(&frame, 0, FALSE, WS_OVERLAPPED);
     }
 
     void Window::destroy() {
-
+        unregister_window_class();
+        DestroyWindow(hwnd);
     }
 
     void Window::show() {
-
+        ShowWindow(hwnd, SW_SHOWNA);
+        UpdateWindow(hwnd);
     }
 
     bool Window::register_window_class(const char* window_title) {
@@ -31,24 +40,27 @@ namespace engine::win32 {
         wc.lpszMenuName  = window_title;
         wc.lpszClassName = window_title;
 
-        if (!RegisterClassEx(&wc)) {
+        atom = RegisterClassEx(&wc);
+
+        if (!atom) {
             return false;
         }
 
         return true;
     }
 
+    void Window::unregister_window_class() {
+        UnregisterClass(MAKEINTATOM(atom), GetModuleHandleA(nullptr));
+    }
+
     bool Window::create_window(const window::config& config) {
 
-        hwnd = CreateWindowEx(0, config.window_title, config.window_title,
+        hwnd = CreateWindowEx(0, MAKEINTATOM(atom), config.window_title,
                               WS_OVERLAPPEDWINDOW | WS_VISIBLE, 0, 0, config.width, config.height,
-                              nullptr, nullptr, nullptr, nullptr);
+                              nullptr, nullptr, GetModuleHandle(nullptr), nullptr);
         if (!hwnd) {
             return false;
         }
-
-        ShowWindow(hwnd, SW_SHOWNA);
-        UpdateWindow(hwnd);
 
         return true;
     }
