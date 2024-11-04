@@ -10,8 +10,9 @@ namespace engine::platform::base {
     public:
         virtual ~Context() = default;
 
-        virtual void create(const std::any hwnd);
-        virtual void destroy(const std::any hwnd);
+        virtual void create(const std::any hwnd) = 0;
+        virtual void destroy(const std::any hwnd) = 0;
+        virtual void update() = 0;
     private:
 
     };

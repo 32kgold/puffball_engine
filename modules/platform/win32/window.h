@@ -1,9 +1,9 @@
 #pragma once
 
 #include "base/window.h"
+#include "window/config.h"
 #include "events.h"
-
-#include "../graphics/glad/glad.h"
+#include "base/headers.h"
 
 // this file is the implementation for windows platform using base window.h functions
 
@@ -15,6 +15,7 @@ namespace engine::win32 {
         void destroy() override;
         void show() override;
 
+        HWND get_window_handle();
     private:
 
         bool register_window_class(const char* window_title);

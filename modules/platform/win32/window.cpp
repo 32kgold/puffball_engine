@@ -3,8 +3,11 @@
 namespace engine::win32 {
 
     void Window::create(const window::config& config) {
-        if (!register_window_class(config.window_title)) { return; }
-        if (!create_window(config)) { return; }
+
+        if (!register_window_class(config.window_title)) {
+            std::cerr << "Failed to register window class" << std::endl;
+            return;
+        }
 
         RECT frame {
             .right = config.width,
@@ -13,36 +16,36 @@ namespace engine::win32 {
 
         AdjustWindowRectEx(&frame, 0, FALSE, WS_OVERLAPPED);
 
-        // load openGL functions
-        if (gladLoadGL() == FALSE) {
+        if (!create_window(config)) {
+            std::cerr << "Failed to create window." << std::endl;
             return;
         }
+
     }
 
     void Window::destroy() {
-        unregister_window_class();
         DestroyWindow(hwnd);
+        unregister_window_class();
     }
 
     void Window::show() {
-        ShowWindow(hwnd, SW_SHOWNA);
+        ShowWindow(hwnd, SW_SHOW);
         UpdateWindow(hwnd);
+    }
+
+    HWND Window::get_window_handle() {
+        return hwnd;
     }
 
     bool Window::register_window_class(const char* window_title) {
 
         WNDCLASSEX wc;
-        HINSTANCE h_instance = GetModuleHandleA(nullptr);
+        HINSTANCE h_instance = GetModuleHandle(nullptr);
 
-        wc.style         = 0;
-        wc.lpfnWndProc   = static_cast<WNDPROC>(Events::window_process);
-        wc.cbClsExtra    = 0;
-        wc.cbWndExtra    = 0;
+        wc.style         = CS_VREDRAW | CS_HREDRAW | CS_OWNDC;
+        wc.lpfnWndProc   = Events::window_process;
         wc.hInstance     = h_instance;
-        wc.hIcon         = LoadIcon(h_instance, window_title);
         wc.hCursor       = LoadCursor(nullptr, IDC_ARROW);
-        wc.hbrBackground = reinterpret_cast<HBRUSH>(COLOR_WINDOW + 1);
-        wc.lpszMenuName  = window_title;
         wc.lpszClassName = window_title;
 
         atom = RegisterClassEx(&wc);
@@ -60,9 +63,10 @@ namespace engine::win32 {
 
     bool Window::create_window(const window::config& config) {
 
-        hwnd = CreateWindowEx(0, MAKEINTATOM(atom), config.window_title,
-                              WS_OVERLAPPEDWINDOW | WS_VISIBLE, 0, 0, config.width, config.height,
-                              nullptr, nullptr, GetModuleHandle(nullptr), nullptr);
+        hwnd = CreateWindowExA(0, MAKEINTATOM(atom), config.window_title,
+                              WS_OVERLAPPEDWINDOW | WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT,
+                              config.width, config.height,nullptr, nullptr,
+                              GetModuleHandle(nullptr), nullptr);
         if (!hwnd) {
             return false;
         }

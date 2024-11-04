@@ -63,6 +63,10 @@ namespace engine::win32 {
 
     }
 
+    void Context::update() {
+        SwapBuffers(hdc);
+    }
+
     void Context::destroy(const std::any hwnd) {
         wglMakeCurrent(nullptr, nullptr);
         ReleaseDC(std::any_cast<HWND>(hwnd), hdc);

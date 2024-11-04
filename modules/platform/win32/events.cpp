@@ -3,18 +3,33 @@
 namespace engine::win32 {
 
     LRESULT Events::window_process(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
-        LRESULT result = 1;
 
         switch (uMsg) {
-            case WM_DESTROY:
+            case WM_CLOSE:
                 PostQuitMessage (0);
                 break;
+            case WM_SIZE:
+                return 0;
+            case WM_ERASEBKGND:
+                return 1;
+            case WM_SYSCOMMAND:
+            {
+                switch (wParam)
+                {
+                    case SC_SCREENSAVE:
+                    case SC_MONITORPOWER:
+                    {
+                        return 0;
+                    }
+                    default:
+                        break;
+                }
+            }
             default:
-                result = DefWindowProc(hwnd, uMsg, wParam, lParam);
-                break;
+                return DefWindowProc(hwnd, uMsg, wParam, lParam);
         }
 
-        return result;
+        return 0;
     }
 
     void Events::update() {

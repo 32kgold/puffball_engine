@@ -22,8 +22,8 @@
 
 namespace engine::win32 {
 
-    using FUNCCREATECONTEXTATTRIBSARB = HGLRC(*WINAPI)(HDC, HGLRC, const int*);
-    using FUNCCHOOSEPIXELFORMATARB = BOOL(*WINAPI)(HDC, const int*, const float*, unsigned int, int*, unsigned int*);
+    using FUNCCREATECONTEXTATTRIBSARB = HGLRC(WINAPI*)(HDC, HGLRC, const int*);
+    using FUNCCHOOSEPIXELFORMATARB = BOOL(WINAPI*)(HDC, const int*, const float*, unsigned int, int*, unsigned int*);
 
     inline FUNCCREATECONTEXTATTRIBSARB wglCreateContextAttribsARB =
             reinterpret_cast<FUNCCREATECONTEXTATTRIBSARB>(wglGetProcAddress("wglCreateContextAttribsARB"));
