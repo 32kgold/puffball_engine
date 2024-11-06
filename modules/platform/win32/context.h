@@ -13,6 +13,10 @@ namespace engine::win32 {
         void create(const std::any hwnd) override;
         void update() override;
         void destroy(const std::any hwnd) override;
+
+        // Have to create dummy window just do get wgl functions to work
+        // Deleted after because only one pixel format per window can be used
+        void init_functions();
     private:
         HDC hdc   = 0;
         HGLRC hrc = 0;

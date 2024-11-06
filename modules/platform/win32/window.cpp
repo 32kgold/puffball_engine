@@ -39,14 +39,14 @@ namespace engine::win32 {
 
     bool Window::register_window_class(const char* window_title) {
 
-        WNDCLASSEX wc;
-        HINSTANCE h_instance = GetModuleHandle(nullptr);
-
-        wc.style         = CS_VREDRAW | CS_HREDRAW | CS_OWNDC;
-        wc.lpfnWndProc   = Events::window_process;
-        wc.hInstance     = h_instance;
-        wc.hCursor       = LoadCursor(nullptr, IDC_ARROW);
-        wc.lpszClassName = window_title;
+        WNDCLASSEX wc = {
+            .cbSize = sizeof(WNDCLASSEX),
+            .style = CS_VREDRAW | CS_HREDRAW | CS_OWNDC,
+            .lpfnWndProc = Events::window_process,
+            .hInstance = GetModuleHandle(nullptr),
+            .hCursor = LoadCursor(nullptr, IDC_ARROW),
+            .lpszClassName = window_title
+        };
 
         atom = RegisterClassEx(&wc);
 

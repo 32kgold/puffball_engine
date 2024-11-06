@@ -12,6 +12,7 @@ namespace engine::platform::base {
         virtual void create(const window::config& config) = 0;
         virtual void destroy() = 0;
         virtual void show() = 0;
+
     private:
 
     };

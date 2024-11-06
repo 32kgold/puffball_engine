@@ -12,7 +12,7 @@ namespace engine::win32 {
             WGL_DRAW_TO_WINDOW_ARB, 1,
             WGL_SUPPORT_OPENGL_ARB, 1,
             WGL_DOUBLE_BUFFER_ARB, 1,
-            WGL_FULL_ACCELERATION_ARB, 1,
+            WGL_ACCELERATION_ARB, WGL_FULL_ACCELERATION_ARB,
             WGL_PIXEL_TYPE_ARB, WGL_TYPE_RGBA_ARB,
             WGL_COLOR_BITS_ARB, 24,
             WGL_DEPTH_BITS_ARB, 24,
@@ -26,7 +26,7 @@ namespace engine::win32 {
         int pixel_format = 0;
         unsigned int formats = 0;
         if (!wglChoosePixelFormatARB(hdc, visual_attribs, nullptr, 1, &pixel_format, &formats) || formats == 0) {
-            MessageBox(nullptr, "ChoosePixelFormatARB failed", "Error", MB_OK);
+            std::cerr << "wglChoosePixelFormatARB failed" << std::endl;
             return;
         }
 
@@ -35,12 +35,12 @@ namespace engine::win32 {
         };
 
         if (DescribePixelFormat(hdc, formats, sizeof(pfd), &pfd) == FALSE) {
-            MessageBox(nullptr, "Failed to describe OpenGL pixel format", "Error", MB_OK);
+            std::cerr << "Failed to describe OpenGL pixel format" << std::endl;
             return;
         }
 
         if (SetPixelFormat(hdc, pixel_format, &pfd) == FALSE) {
-            MessageBox(nullptr, "SetPixelFormat failed", "Error", MB_OK);
+            std::cerr << "Failed to set pixel format" << std::endl;
             return;
         }
 
@@ -56,7 +56,7 @@ namespace engine::win32 {
         hrc = wglCreateContextAttribsARB(hdc, nullptr, attrib);
 
         if (!hrc) {
-            MessageBox(nullptr, "Failed to create OpenGL context", "Error", MB_OK);
+            std::cerr << "wglCreateContextAttribsARB failed" << std::endl;
         }
 
         wglMakeCurrent(hdc, hrc);
@@ -73,6 +73,66 @@ namespace engine::win32 {
         wglDeleteContext(hrc);
     }
 
+    void Context::init_functions() {
+
+        WNDCLASSEX wc = {
+            .cbSize = sizeof(WNDCLASSEX),
+            .lpfnWndProc = DefWindowProcA,
+            .hInstance = GetModuleHandle(nullptr),
+            .lpszClassName = "dummy"
+        };
+
+        if (!RegisterClassEx(&wc)) {
+            std::cerr << "Dummy RegisterClassEx failed" << std::endl;
+            return;
+        }
+
+        HWND dummy_window = CreateWindowExA(0, wc.lpszClassName, "dummy win",
+                              0, CW_USEDEFAULT, CW_USEDEFAULT,
+                              CW_USEDEFAULT, CW_USEDEFAULT,nullptr, nullptr,
+                              GetModuleHandle(nullptr), nullptr);
+
+        if (!dummy_window) {
+            std::cerr << "Dummy CreateWindowExA failed" << std::endl;
+        }
+
+        HDC hdc = GetDC(dummy_window);
+
+        PIXELFORMATDESCRIPTOR pfd = {
+            .nSize = sizeof(pfd),
+            .nVersion = 1,
+            .dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER,
+            .iPixelType = PFD_TYPE_RGBA,
+            .cColorBits = 24,
+            .cDepthBits = 24,
+            .cStencilBits = 8,
+            .iLayerType = PFD_MAIN_PLANE,
+        };
+
+        int pixel_format = ChoosePixelFormat(hdc, &pfd);
+        if (!pixel_format) {
+            std::cerr << "Dummy ChoosePixelFormat failed" << std::endl;
+        }
+
+        if (!SetPixelFormat(hdc, pixel_format, &pfd)) {
+            std::cerr << "Dummy SetPixelFormat failed" << std::endl;
+        }
+
+        HGLRC hrc = wglCreateContext(hdc);
+        if (!hrc) {
+            std::cerr << "Dummy wglCreateContext failed" << std::endl;
+        }
+
+        wglMakeCurrent(hdc, hrc);
+
+        wglCreateContextAttribsARB = reinterpret_cast<FUNCCREATECONTEXTATTRIBSARB>(wglGetProcAddress("wglCreateContextAttribsARB"));
+        wglChoosePixelFormatARB = reinterpret_cast<FUNCCHOOSEPIXELFORMATARB>(wglGetProcAddress("wglChoosePixelFormatARB"));
+
+        wglMakeCurrent(hdc, nullptr);
+        wglDeleteContext(hrc);
+        ReleaseDC(dummy_window, hdc);
+        DestroyWindow(dummy_window);
+    }
 }
 
 

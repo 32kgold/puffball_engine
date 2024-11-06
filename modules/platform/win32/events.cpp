@@ -7,6 +7,7 @@ namespace engine::win32 {
         switch (uMsg) {
             case WM_CLOSE:
                 PostQuitMessage (0);
+                Window::should_close = true;
                 break;
             case WM_SIZE:
                 return 0;

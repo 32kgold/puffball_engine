@@ -14,8 +14,8 @@ namespace engine::base {
 
         window.create(config);
         window.show();
-        std::cout << window.get_window_handle() << std::endl;
 
+        context.init_functions();
         context.create(window.get_window_handle());
     }
 
