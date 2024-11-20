@@ -2,6 +2,8 @@
 
 namespace engine::win32 {
 
+    bool Window::should_close = false;
+
     void Window::create(const window::config& config) {
 
         if (!register_window_class(config.window_title)) {

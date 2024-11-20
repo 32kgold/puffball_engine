@@ -7,9 +7,7 @@ int main() {
     engine::base::WindowManager window_manager;
     window_manager.init_window();
 
-    bool is_running = true;
-
-    while (is_running) {
+    while (!engine::win32::Window::should_close) {
         window_manager.update();
     }
 
