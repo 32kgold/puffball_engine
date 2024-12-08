@@ -40,9 +40,6 @@ namespace engine::win32 {
                 TranslateMessage(&msg);
                 DispatchMessage(&msg);
             }
-            else {
-                return;
-            }
         };
     }
 }
